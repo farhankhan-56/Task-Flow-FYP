@@ -10,6 +10,14 @@ const { query } = require('../db');
 
 const router = express.Router();
 
+const forgotPasswordFlowLimiter = rateLimit({
+  windowMs: Number(process.env.FORGOT_WINDOW_MS || 15 * 60 * 1000),
+  max: Number(process.env.FORGOT_RATELIMIT_MAX ?? 60),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many attempts. Try again in a few minutes.' }
+});
+
 const signupLoginLimiter = rateLimit({
   windowMs: Number(process.env.AUTH_RATELIMIT_WINDOW_MS || 15 * 60 * 1000),
   max: Number(
@@ -109,6 +117,53 @@ router.get('/me', (req, res) => {
     return res.status(401).json({ error: 'Not logged in.' });
   }
   res.json({ user: req.session.user });
+});
+
+/** Step 1: does this email have an account? (used to reveal password fields in UI) */
+router.post('/forgot-password/check-email', forgotPasswordFlowLimiter, async (req, res) => {
+  const raw = typeof req.body?.email === 'string' ? req.body.email : '';
+  const email = raw.toLowerCase().trim();
+
+  if (!email || !isValidEmail(email)) {
+    return res.status(400).json({ error: 'Enter a valid email address.', exists: false });
+  }
+
+  try {
+    const result = await query('SELECT 1 FROM users WHERE email = $1 LIMIT 1', [email]);
+    res.json({ exists: result.rows.length > 0 });
+  } catch (err) {
+    console.error('[auth/forgot-password/check-email]', err);
+    return res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+/** Step 2: set a new password if that email exists (no email magic link). */
+router.post('/forgot-password/set-password', forgotPasswordFlowLimiter, async (req, res) => {
+  const rawEmail = typeof req.body?.email === 'string' ? req.body.email : '';
+  const { password } = req.body || {};
+  const email = rawEmail.toLowerCase().trim();
+
+  if (!email || !isValidEmail(email)) {
+    return res.status(400).json({ error: 'Enter a valid email address.' });
+  }
+  if (!password || typeof password !== 'string' || password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+  }
+
+  try {
+    const lookup = await query('SELECT id FROM users WHERE email = $1 LIMIT 1', [email]);
+    if (lookup.rows.length === 0) {
+      return res.status(404).json({ error: 'No account found for this email.' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    await query(`UPDATE users SET password_hash = $1 WHERE email = $2`, [passwordHash, email]);
+
+    res.json({ message: 'Password updated. You can log in now.' });
+  } catch (err) {
+    console.error('[auth/forgot-password/set-password]', err);
+    return res.status(500).json({ error: 'Server error.' });
+  }
 });
 
 module.exports = router;

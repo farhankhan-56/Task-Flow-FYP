@@ -21,10 +21,6 @@ function closeSidebar() {
   document.getElementById('sidebar-overlay')?.classList.remove('open');
 }
 
-function handleForgotPassword() {
-  showToast('Password recovery is not implemented in this demo.', 'info');
-}
-
 // ── Fetch Helper ─────────────────────────────────────────────────
 async function apiFetch(endpoint, options = {}) {
   const url = `${API_URL}${endpoint}`;
@@ -582,16 +578,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
   );
 
-  // If on a protected page, require auth and init sidebar
   const page = window.location.pathname.split('/').pop();
-  const authPages = ['index.html', 'signup.html', ''];
+  const publicPages = ['index.html', 'signup.html', 'forgot-password.html', 'reset-password.html', ''];
+  const redirectToDashboardIfLoggedIn = ['index.html', 'signup.html', ''];
   console.log(`📄 Current page: ${page || 'root'}`);
-  
-  if (!authPages.includes(page)) {
+
+  if (!publicPages.includes(page)) {
     console.log('🔐 Protected page - checking auth...');
     const user = await getUser();
     console.log(`👤 Auth check result:`, user);
-    
+
     if (!user) {
       console.log('❌ No user found - redirecting to login');
       window.location.href = 'index.html';
@@ -599,8 +595,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     console.log('✅ User authenticated - initializing sidebar');
     await initSidebar();
-  } else {
-    console.log('📖 Auth page - checking if already logged in');
+  } else if (redirectToDashboardIfLoggedIn.includes(page)) {
     const user = await getUser();
     if (user) {
       console.log('✅ Already logged in - redirecting to dashboard');
