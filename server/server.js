@@ -33,7 +33,7 @@ if (isProduction || process.env.TRUST_PROXY === '1') {
 }
 
 // ── CORS (explicit list + extra env + private LAN HTTP in development)
-const corsAllowList = new Set(['http://localhost:3000', 'http://127.0.0.1:3000']);
+const corsAllowList = new Set(['http://localhost:3000', 'http://127.0.0.1:3000', 'https://task-flow-fyp-production.up.railway.app']);
 (process.env.CORS_ORIGINS || '')
   .split(',')
   .map((o) => o.trim())
