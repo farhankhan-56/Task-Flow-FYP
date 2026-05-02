@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Flow — Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="auth-wrapper">
+
+  <!-- LEFT: Slogan -->
+  <div class="auth-left">
+    <div class="auth-circle-sm" style="width:200px;height:200px;top:10%;right:8%"></div>
+    <div class="auth-circle-sm" style="width:110px;height:110px;bottom:18%;left:14%"></div>
+
+    <div class="auth-brand">
+      <div class="auth-brand-icon"><i class="fa-solid fa-diagram-project"></i></div>
+      <span class="auth-brand-name">Task Flow</span>
+    </div>
+
+    <div class="auth-slogan">
+      <h2>
+        Organize your<br>
+        <span class="highlight">tasks</span> professionally<br>
+        and stay <span class="highlight">up to date.</span>
+      </h2>
+      <p>Your personal command center for everything that matters — clear, focused, effortless.</p>
+      <div class="auth-dots"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Form -->
+  <div class="auth-right">
+    <div class="auth-form-box">
+      <h2>Welcome!</h2>
+      <!-- <p class="auth-sub">Don't have an account? <a href="signup.html">Sign up free</a></p> -->
+
+      <div class="form-group">
+        <label for="l-email"><i class="fa-solid fa-envelope"></i> Email</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-envelope input-icon"></i>
+          <input class="form-input" type="email" id="l-email" placeholder="Enter your email" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="l-pass"><i class="fa-solid fa-lock"></i> Password</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input class="form-input" type="password" id="l-pass" placeholder="Enter your password" required />
+        </div>
+      </div>
+
+      <button type="button" class="forgot-link" onclick="handleForgotPassword()"><i class="fa-solid fa-key"></i> Forgot password?</button>
+
+      <button class="auth-btn" onclick="handleLogin()">
+        <i class="fa-solid fa-right-to-bracket"></i> Log in
+      </button>
+
+      <div class="auth-footer-link">
+        New here? <a href="signup.html"><i class="fa-solid fa-user-plus"></i> Create an account</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast-container"></div>
+<script src="js/app.js"></script>
+<script>
+  // Redirect if already logged in
+  (async () => {
+    const user = await getUser();
+    if (user) window.location.href = 'dashboard.html';
+  })();
+</script>
+</body>
+</html>

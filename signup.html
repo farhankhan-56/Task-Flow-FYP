@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Flow — Sign Up</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="auth-wrapper">
+
+  <!-- LEFT -->
+  <div class="auth-left">
+    <div class="auth-circle-sm" style="width:220px;height:220px;top:6%;right:6%"></div>
+    <div class="auth-circle-sm" style="width:120px;height:120px;bottom:20%;left:10%"></div>
+
+    <div class="auth-brand">
+      <div class="auth-brand-icon"><i class="fa-solid fa-diagram-project"></i></div>
+      <span class="auth-brand-name">Task Flow</span>
+    </div>
+
+    <div class="auth-slogan">
+      <h2>
+        Start your<br>
+        <span class="highlight">productivity</span><br>
+        journey today.
+      </h2>
+      <p>Join and take full control of your tasks, deadlines, and priorities in one place.</p>
+    </div>
+
+    <div class="auth-features">
+      <div class="auth-feature-item"><i class="fa-solid fa-list-check"></i> Smart task management</div>
+      <div class="auth-feature-item"><i class="fa-solid fa-chart-bar"></i> Progress tracking & stats</div>
+      <div class="auth-feature-item"><i class="fa-solid fa-folder-open"></i> Custom categories</div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="auth-right">
+    <div class="auth-form-box">
+      <h2>Create Account</h2>
+      <!-- <p class="auth-sub">Already have an account? <a href="index.html">Log in</a></p> -->
+
+      <div class="form-group">
+        <label for="s-name"><i class="fa-solid fa-user"></i> Full Name</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-user input-icon"></i>
+          <input class="form-input" type="text" id="s-name" placeholder="Enter your name" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="s-email"><i class="fa-solid fa-envelope"></i> Email</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-envelope input-icon"></i>
+          <input class="form-input" type="email" id="s-email" placeholder="Enter your email" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="s-pass"><i class="fa-solid fa-lock"></i> Password</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input class="form-input" type="password" id="s-pass" placeholder="Min. 6 characters" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="s-confirm"><i class="fa-solid fa-shield-halved"></i> Confirm Password</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-shield-halved input-icon"></i>
+          <input class="form-input" type="password" id="s-confirm" placeholder="Repeat your password" required />
+        </div>
+      </div>
+
+      <button class="auth-btn" onclick="handleSignup()">
+        <i class="fa-solid fa-user-plus"></i> Sign up
+      </button>
+
+      <div class="auth-footer-link">
+        Already registered? <a href="index.html"><i class="fa-solid fa-right-to-bracket"></i> Log in</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast-container"></div>
+<script src="js/app.js"></script>
+<script>
+  (async () => {
+    const user = await getUser();
+    if (user) window.location.href = 'dashboard.html';
+  })();
+</script>
+</body>
+</html>

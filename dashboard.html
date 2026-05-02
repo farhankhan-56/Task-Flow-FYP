@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Flow — Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+  <!-- Mobile overlay -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <div class="app-layout">
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><i class="fa-solid fa-diagram-project"></i></div>
+        Task <span class="accent">Flow</span>
+      </div>
+
+      <div class="sidebar-section">
+        <span class="section-label">Menu</span>
+        <a href="dashboard.html" class="nav-link active"><span class="nav-icon"><i class="fa-solid fa-house"></i></span>
+          Dashboard</a>
+        <a href="stats.html" class="nav-link"><span class="nav-icon"><i class="fa-solid fa-chart-bar"></i></span>
+          Stats</a>
+
+        <!-- Tasks collapsible -->
+        <input type="checkbox" class="tasks-toggle-input" id="tasksToggle" />
+        <label for="tasksToggle" class="nav-link tasks-toggle-label">
+          <span class="nav-icon"><i class="fa-solid fa-list-check"></i></span> Tasks
+          <i class="fa-solid fa-chevron-down chevron"></i>
+        </label>
+        <div class="submenu">
+          <a href="pending.html" class="submenu-link"><i class="fa-regular fa-clock"></i> Pending <span
+              id="pending-badge" class="nav-badge"
+              style="display:none;background:var(--medium);color:#fff;padding:1px 7px;border-radius:20px;font-size:11px;margin-left:auto">0</span></a>
+          <a href="complete.html" class="submenu-link"><i class="fa-solid fa-circle-check"></i> Completed</a>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="cats-header">
+          <span class="section-label" style="padding:0">Categories</span>
+          <button class="add-cat-btn" onclick="openCatModal()" title="Add category"><i
+              class="fa-solid fa-plus"></i></button>
+        </div>
+        <div class="cat-list" id="sidebar-cats"></div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="avatar" id="sb-avatar">U</div>
+          <div>
+            <div class="user-name" id="sb-name">User</div>
+            <div class="user-email" id="sb-email">user@email.com</div>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </aside>
+
+    <!-- ═══ MAIN ═══ -->
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+
+      <!-- Mobile topbar -->
+      <div class="topbar">
+        <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+        <div class="topbar-logo"><i class="fa-solid fa-diagram-project"></i> Task <span class="accent">Flow</span></div>
+      </div>
+
+      <main class="main-content">
+
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1 id="dash-greeting"><i class="fa-solid fa-house"></i> Dashboard</h1>
+            <p id="dash-date"></p>
+          </div>
+          <!-- <span class="page-badge" id="dash-badge"><i class="fa-regular fa-calendar"></i> Today</span> -->
+        </div>
+
+        <!-- Action bar -->
+        <div class="action-bar">
+          <div class="search-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input class="search-input" type="text" id="search-input" placeholder="Search tasks by title..."
+              oninput="applyFilters()" />
+          </div>
+          <button class="add-task-btn" onclick="openAddTaskModal()"><i class="fa-solid fa-plus"></i> Add New
+            Task</button>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="filter-bar">
+          <span class="filter-label"><i class="fa-solid fa-filter"></i> Filters:</span>
+          <button class="filter-btn active" onclick="setStatusFilter('pending', this)">Pending</button>
+          <div class="filter-divider"></div>
+          <select class="priority-select" id="priority-filter" onchange="applyFilters()">
+            <option value="all">All Priorities</option>
+            <option value="high">🔴 High Priority</option>
+            <option value="medium">🟡 Medium Priority</option>
+            <option value="low">🟢 Low Priority</option>
+          </select>
+        </div>
+
+        <!-- Tasks -->
+        <div class="tasks-grid" id="tasks-list"></div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Add/Edit Task Modal -->
+  <div class="modal-overlay" id="task-modal" onclick="if(event.target===this)closeTaskModal()">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title" id="task-modal-title">Add New Task</span>
+        <button class="modal-close" onclick="closeTaskModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-input-group">
+        <label>Title *</label>
+        <input class="modal-input" type="text" id="t-title" placeholder="What needs to be done?" />
+      </div>
+      <div class="modal-input-group">
+        <label>Description</label>
+        <textarea class="modal-input" id="t-desc" rows="3" placeholder="Optional details..."></textarea>
+      </div>
+      <div class="modal-grid">
+        <div class="modal-input-group">
+          <label>Due Date</label>
+          <input class="modal-input" type="date" id="t-due" />
+        </div>
+        <div class="modal-input-group">
+          <label>Priority</label>
+          <select class="modal-input" id="t-priority">
+            <option value="low">🟢 Low</option>
+            <option value="medium" selected>🟡 Medium</option>
+            <option value="high">🔴 High</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-input-group">
+        <label>Category</label>
+        <select class="modal-input" id="t-category"></select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeTaskModal()">Cancel</button>
+        <button class="btn-submit" id="t-submit" onclick="submitTask()">Add Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal-overlay" id="del-modal" onclick="if(event.target===this)closeDeleteModal()">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <span class="modal-title">Delete Task</span>
+        <button class="modal-close" onclick="closeDeleteModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p style="color:var(--text-light);font-size:14px;margin-bottom:8px">Are you sure you want to delete this task?
+        This cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn-submit btn-submit-danger" onclick="confirmDelete()"><i class="fa-solid fa-trash"></i>
+          Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Category Modal -->
+  <div class="modal-overlay" id="cat-modal" onclick="if(event.target===this)closeCatModal()">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <span class="modal-title">New Category</span>
+        <button class="modal-close" onclick="closeCatModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-input-group">
+        <label>Name</label>
+        <input class="modal-input" type="text" id="cat-name" placeholder="e.g. Finance" />
+      </div>
+      <div class="modal-input-group">
+        <label>Color</label>
+        <input type="color" id="cat-color" value="#4A90E2"
+          style="width:60px;height:36px;border:none;background:none;cursor:pointer" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeCatModal()">Cancel</button>
+        <button class="btn-submit" onclick="submitCat()">Add Category</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container"></div>
+  <script src="js/app.js"></script>
+  <script>
+    let _statusFilter = 'pending';
+
+    function setStatusFilter(status, btn) {
+      _statusFilter = status;
+      setActiveFilter(btn);
+      applyFilters();
+    }
+
+    async function applyFilters() {
+      const query = (document.getElementById('search-input')?.value || '').toLowerCase();
+      const priority = document.getElementById('priority-filter')?.value || 'all';
+      const urlCat = new URLSearchParams(window.location.search).get('cat');
+      let tasks = await getTasks();
+
+      // Always exclude completed from dashboard
+      tasks = tasks.filter(t => t.status === 'pending');
+
+      if (priority !== 'all') tasks = tasks.filter(t => t.priority === priority);
+      if (urlCat) tasks = tasks.filter(t => t.category === urlCat);
+      if (query) tasks = tasks.filter(t => t.title.toLowerCase().includes(query) || (t.description || '').toLowerCase().includes(query));
+
+      renderTaskList(tasks);
+    }
+
+    async function renderTaskList(tasks) {
+      const cats = await getCats();
+      const el = document.getElementById('tasks-list');
+      if (!tasks.length) {
+        el.innerHTML = `<div class="empty-state"><i class="fa-solid fa-inbox"></i><h3>No pending tasks</h3><p>All caught up! Add a new task or check completed tasks.</p></div>`;
+        return;
+      }
+      el.innerHTML = tasks.map(t => buildTaskCard(t, cats, { showCheck: true })).join('');
+    }
+
+    async function renderPage() {
+      applyFilters();
+    }
+
+    // Greeting — auth redirect is handled in app.js (protected pages)
+    (async () => {
+      const user = await getUser();
+      if (!user) return;
+      const h = new Date().getHours();
+      const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('dash-greeting').textContent = `${greet}, ${user.name}`;
+      const urlCatActive = new URLSearchParams(window.location.search).get('cat');
+      if (urlCatActive) {
+        document.querySelector('a[href="dashboard.html"]')?.classList.add('cat-selected');
+      }
+      document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+      renderPage();
+    })();
+  </script>
+</body>
+
+</html>

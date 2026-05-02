@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Flow — Stats</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fa-solid fa-diagram-project"></i></div>
+      Task <span class="accent">Flow</span>
+    </div>
+    <div class="sidebar-section">
+      <span class="section-label">Menu</span>
+      <a href="dashboard.html" class="nav-link"><span class="nav-icon"><i class="fa-solid fa-house"></i></span> Dashboard</a>
+      <a href="stats.html"     class="nav-link active"><span class="nav-icon"><i class="fa-solid fa-chart-bar"></i></span> Stats</a>
+      <input type="checkbox" class="tasks-toggle-input" id="tasksToggle" />
+      <label for="tasksToggle" class="nav-link tasks-toggle-label">
+        <span class="nav-icon"><i class="fa-solid fa-list-check"></i></span> Tasks
+        <i class="fa-solid fa-chevron-down chevron"></i>
+      </label>
+      <div class="submenu">
+        <a href="pending.html"  class="submenu-link"><i class="fa-regular fa-clock"></i> Pending <span id="pending-badge" style="display:none;background:var(--medium);color:#fff;padding:1px 7px;border-radius:20px;font-size:11px;margin-left:auto">0</span></a>
+        <a href="complete.html" class="submenu-link"><i class="fa-solid fa-circle-check"></i> Completed</a>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="cats-header">
+        <span class="section-label" style="padding:0">Categories</span>
+        <button class="add-cat-btn" onclick="openCatModal()"><i class="fa-solid fa-plus"></i></button>
+      </div>
+      <div class="cat-list" id="sidebar-cats"></div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="avatar" id="sb-avatar">U</div>
+        <div><div class="user-name" id="sb-name">User</div><div class="user-email" id="sb-email">user@email.com</div></div>
+      </div>
+      <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </aside>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <div class="topbar">
+      <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+      <div class="topbar-logo"><i class="fa-solid fa-diagram-project"></i> Task <span class="accent">Flow</span></div>
+    </div>
+
+    <main class="main-content">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1><i class="fa-solid fa-chart-pie"></i> Statistics</h1>
+          <p>Track your productivity and task completion progress</p>
+        </div>
+        <!-- <span class="page-badge"><i class="fa-regular fa-calendar"></i> All Time</span> -->
+      </div>
+
+      <!-- Summary stat cards -->
+      <div class="stats-grid" id="stat-cards"></div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3><i class="fa-solid fa-flag"></i> Priority Distribution</h3>
+            <span id="chart-total-label">0 tasks</span>
+          </div>
+          <div class="chart-canvas-wrap"><canvas id="chart-priority"></canvas></div>
+          <div class="chart-legend" id="priority-legend"></div>
+        </div>
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3><i class="fa-solid fa-circle-half-stroke"></i> Task Status</h3>
+            <span id="chart-status-label">0 tasks</span>
+          </div>
+          <div class="chart-canvas-wrap"><canvas id="chart-status"></canvas></div>
+          <div class="chart-legend" id="status-legend"></div>
+        </div>
+      </div>
+
+      <!-- Priority breakdown table -->
+      <div class="details-section">
+        <div class="details-header">
+          <h3><i class="fa-solid fa-table-list"></i> Priority Breakdown</h3>
+          <a href="dashboard.html">View all tasks <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        <div class="details-table-scroll">
+          <table class="stats-table stats-table-breakdown">
+            <thead>
+              <tr>
+                <th>Priority</th>
+                <th>Total</th>
+                <th>Completed</th>
+                <th>Pending</th>
+                <th>Completion %</th>
+              </tr>
+            </thead>
+            <tbody id="stats-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Category Modal -->
+<div class="modal-overlay" id="cat-modal" onclick="if(event.target===this)closeCatModal()">
+  <div class="modal modal-sm">
+    <div class="modal-header"><span class="modal-title">New Category</span><button class="modal-close" onclick="closeCatModal()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-input-group"><label>Name</label><input class="modal-input" type="text" id="cat-name" placeholder="e.g. Finance" /></div>
+    <div class="modal-input-group"><label>Color</label><input type="color" id="cat-color" value="#4A90E2" style="width:60px;height:36px;border:none;background:none;cursor:pointer" /></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCatModal()">Cancel</button>
+      <button class="btn-submit" onclick="submitCat()">Add Category</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="js/app.js"></script>
+<script>
+  let _chartInstances = [];
+
+  async function renderPage() {
+    const tasks   = await getTasks();
+    const total   = tasks.length;
+    const done    = tasks.filter(t => t.status === 'complete').length;
+    const pending = tasks.filter(t => t.status === 'pending').length;
+    const overdue = tasks.filter(t => isOverdue(t.dueDate, t.status)).length;
+    const pct     = total ? Math.round(done / total * 100) : 0;
+
+    const high   = tasks.filter(t => t.priority === 'high').length;
+    const medium = tasks.filter(t => t.priority === 'medium').length;
+    const low    = tasks.filter(t => t.priority === 'low').length;
+
+    const highDone   = tasks.filter(t => t.priority === 'high'   && t.status === 'complete').length;
+    const medDone    = tasks.filter(t => t.priority === 'medium' && t.status === 'complete').length;
+    const lowDone    = tasks.filter(t => t.priority === 'low'    && t.status === 'complete').length;
+
+    // Stat cards
+    document.getElementById('stat-cards').innerHTML = `
+      <div class="stat-card">
+        <div class="stat-card-header"><div class="stat-icon total"><i class="fa-solid fa-list-check"></i></div><div class="stat-title">Total Tasks</div></div>
+        <div class="stat-number">${total}</div>
+        <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> All time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header"><div class="stat-icon done"><i class="fa-solid fa-circle-check"></i></div><div class="stat-title">Completed</div></div>
+        <div class="stat-number">${done}</div>
+        <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> ${pct}% rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header"><div class="stat-icon pending"><i class="fa-regular fa-clock"></i></div><div class="stat-title">Pending</div></div>
+        <div class="stat-number">${pending}</div>
+        <div class="stat-change ${pending>0?'down':'up'}"><i class="fa-solid fa-hourglass-half"></i> Remaining</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header"><div class="stat-icon rate"><i class="fa-solid fa-fire"></i></div><div class="stat-title">Completion Rate</div></div>
+        <div class="stat-number">${pct}%</div>
+        <div class="stat-change ${pct>=50?'up':'down'}"><i class="fa-solid fa-chart-line"></i> Overall</div>
+      </div>`;
+
+    document.getElementById('chart-total-label').textContent  = total + ' tasks';
+    document.getElementById('chart-status-label').textContent = total + ' tasks';
+
+    // Destroy old charts
+    _chartInstances.forEach(c => { try { c.destroy(); } catch {} });
+    _chartInstances = [];
+
+    // Priority chart
+    const c1 = new Chart(document.getElementById('chart-priority'), {
+      type: 'bar',
+      data: {
+        labels: ['High', 'Medium', 'Low'],
+        datasets: [{
+          data: [high, medium, low],
+          backgroundColor: ['#EF4444', '#F59E0B', '#10B981'],
+          borderRadius: 6, borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#64748B', font: { size: 12, family: 'Plus Jakarta Sans' } }, grid: { display: false } },
+          y: { ticks: { color: '#64748B', font: { size: 11, family: 'Plus Jakarta Sans' }, stepSize: 1 }, grid: { color: '#F0F5FB' } }
+        }
+      }
+    });
+
+    // Status doughnut
+    const c2 = new Chart(document.getElementById('chart-status'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Completed', 'Pending'],
+        datasets: [{ data: [done || 0, pending || 0], backgroundColor: ['#10B981', '#4A90E2'], borderWidth: 0, hoverOffset: 4 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '68%',
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    _chartInstances = [c1, c2];
+
+    // Legends
+    document.getElementById('priority-legend').innerHTML = `
+      <div class="legend-item"><span class="legend-dot" style="background:#EF4444"></span> High (${high})</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span> Medium (${medium})</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#10B981"></span> Low (${low})</div>`;
+    document.getElementById('status-legend').innerHTML = `
+      <div class="legend-item"><span class="legend-dot" style="background:#10B981"></span> Completed (${done})</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#4A90E2"></span> Pending (${pending})</div>`;
+
+    // Table
+    const rows = [
+      { label: 'High',   cls: 'high',   icon: 'fa-circle-exclamation', total: high,   done: highDone,   pending: high-highDone },
+      { label: 'Medium', cls: 'medium', icon: 'fa-circle-half-stroke', total: medium, done: medDone,    pending: medium-medDone },
+      { label: 'Low',    cls: 'low',    icon: 'fa-circle-check',        total: low,    done: lowDone,    pending: low-lowDone },
+    ];
+    document.getElementById('stats-table-body').innerHTML = rows.map(r => {
+      const p = r.total ? Math.round(r.done / r.total * 100) : 0;
+      return `<tr>
+        <td><span class="priority-badge-table ${r.cls}"><i class="fa-solid ${r.icon}"></i> ${r.label}</span></td>
+        <td>${r.total}</td>
+        <td><span style="color:var(--low);font-weight:600">${r.done}</span></td>
+        <td><span style="color:var(--high);font-weight:600">${r.pending}</span></td>
+        <td>
+          <div class="progress-wrap">
+            <div class="progress-bar-outer"><div class="progress-bar-fill ${r.cls}-fill" style="width:${p}%"></div></div>
+            <span class="progress-pct">${p}%</span>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  renderPage();
+</script>
+</body>
+</html>
