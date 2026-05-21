@@ -60,6 +60,11 @@
         <i class="fa-solid fa-right-to-bracket"></i> Log in
       </button>
 
+      <div class="auth-divider"><span>or</span></div>
+      <button class="auth-btn" onclick="handleGoogleAuth()" style="background:#4285f4;border:none;color:#fff;">
+        <i class="fa-brands fa-google"></i> Continue with Google
+      </button>
+
       <div class="auth-footer-link">
         New here? <a href="signup.html"><i class="fa-solid fa-user-plus"></i> Create an account</a>
       </div>
@@ -74,6 +79,13 @@
   // Redirect if already logged in
   (async () => {
     const user = await getUser();
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('verified') === '1') {
+      showToast('Email verified! Please log in.', 'success');
+    }
+    if (params.get('google_error') === '1') {
+      showToast('Google sign-in failed. Please try again.', 'error');
+    }
     if (user) window.location.href = 'dashboard.html';
   })();
 </script>

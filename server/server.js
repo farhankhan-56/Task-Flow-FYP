@@ -11,8 +11,10 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
+const passport = require('passport');
 
 const authRoutes = require('./routes/auth');
+const googleAuthRoutes = require('./routes/google-auth');
 const taskRoutes = require('./routes/tasks');
 const categoryRoutes = require('./routes/categories');
 
@@ -76,15 +78,18 @@ app.use(session({
   cookie: {
     secure: isProduction,
     httpOnly: true,
-    sameSite: 'strict',
+    sameSite: 'lax',
     maxAge: 1000 * 60 * 60 * 24
   }
 }));
 
+app.use(passport.initialize());
+
 // ── Serve static frontend files ───────────────────────────────────
 app.use(express.static(path.join(__dirname, '..')));
 
-// ── API Routes ────────────────────────────────────────────────────
+// ── Auth Routes ───────────────────────────────────────────────────
+app.use('/auth', googleAuthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/categories', categoryRoutes);

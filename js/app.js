@@ -107,6 +107,10 @@ async function logout() {
   window.location.href = 'index.html';
 }
 
+function handleGoogleAuth() {
+  window.location.href = '/auth/google';
+}
+
 // Login
 async function handleLogin(e) {
   if (e) e.preventDefault();
@@ -143,6 +147,11 @@ async function handleSignup(e) {
       method: 'POST',
       body: { name, email, password: pass }
     });
+    if (res.needsVerification) {
+      showToast('Account created! Check your email to verify your address.', 'success');
+      setTimeout(() => window.location.href = 'index.html', 1200);
+      return;
+    }
     _currentUser = res.user;
     showToast('Account created! Welcome, ' + name + '!');
     setTimeout(() => window.location.href = 'dashboard.html', 700);
@@ -313,7 +322,17 @@ async function renderSidebarUser() {
   const av = document.getElementById('sb-avatar');
   const nm = document.getElementById('sb-name');
   const em = document.getElementById('sb-email');
-  if (av) av.textContent = user.name.charAt(0).toUpperCase();
+  if (av) {
+    if (user.profile_picture) {
+      av.style.backgroundImage = `url('${user.profile_picture}')`;
+      av.style.backgroundSize = 'cover';
+      av.style.backgroundPosition = 'center';
+      av.textContent = '';
+    } else {
+      av.style.backgroundImage = 'none';
+      av.textContent = user.name.charAt(0).toUpperCase();
+    }
+  }
   if (nm) nm.textContent = user.name;
   if (em) em.textContent = user.email;
 }
