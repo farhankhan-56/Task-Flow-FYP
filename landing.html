@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Task Flow — A Final Year Project task management web application by students of Abdul Wali Khan University." />
+  <title>Task Flow — Smart Task Management | FYP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/landing.css" />
+</head>
+<body class="landing-page">
+
+  <!-- Navigation -->
+  <header class="landing-nav" id="landing-nav">
+    <div class="landing-container landing-nav-inner">
+      <a href="/" class="landing-logo">
+        <div class="logo-icon"><i class="fa-solid fa-diagram-project"></i></div>
+        Task <span class="accent">Flow</span>
+      </a>
+
+      <button type="button" class="landing-menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <nav class="landing-nav-links" id="nav-links">
+        <a href="#features" class="nav-link-text">Features</a>
+        <a href="#how-it-works" class="nav-link-text">How it works</a>
+        <a href="index.html" class="landing-btn landing-btn-ghost">Login</a>
+        <a href="signup.html" class="landing-btn landing-btn-primary">Sign up</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="landing-hero" id="home">
+    <div class="landing-container landing-hero-grid">
+    <div class="landing-hero-content">
+      <div class="landing-badge">
+        <i class="fa-solid fa-graduation-cap"></i>
+        Final Year Project · AWKUM 2022–2026
+      </div>
+      <h1>
+        Organize your work with<br>
+        <span class="highlight">Task Flow</span>
+      </h1>
+      <p class="landing-hero-tagline">
+        A modern task management web app to plan deadlines, track priorities, manage categories, and visualize your productivity—all in one place.
+      </p>
+      <div class="landing-hero-cta">
+        <a href="signup.html" class="landing-btn landing-btn-primary landing-btn-lg">
+          <i class="fa-solid fa-rocket"></i> Get Started
+        </a>
+        <a href="index.html" class="landing-btn landing-btn-outline landing-btn-lg">
+          <i class="fa-solid fa-right-to-bracket"></i> Login
+        </a>
+      </div>
+      <div class="landing-hero-stats">
+        <div class="landing-stat">
+          <strong>6+</strong>
+          <span>Core modules</span>
+        </div>
+        <div class="landing-stat">
+          <strong>100%</strong>
+          <span>Responsive UI</span>
+        </div>
+        <div class="landing-stat">
+          <strong>Secure</strong>
+          <span>Auth & sessions</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CSS app mockup -->
+    <div class="landing-mockup-wrap">
+      <div class="mockup-float stats">
+        <i class="fa-solid fa-chart-line"></i> Live stats
+      </div>
+      <div class="mockup-float chart">
+        <i class="fa-solid fa-circle-check"></i> 12 completed
+      </div>
+      <div class="landing-mockup" role="img" aria-label="Task Flow dashboard preview">
+        <div class="mockup-chrome">
+          <span class="mockup-dot red"></span>
+          <span class="mockup-dot yellow"></span>
+          <span class="mockup-dot green"></span>
+          <span class="mockup-url">taskflow.app/dashboard</span>
+        </div>
+        <div class="mockup-body">
+          <div class="mockup-sidebar">
+            <div class="ms-icon active"><i class="fa-solid fa-house"></i></div>
+            <div class="ms-icon"><i class="fa-solid fa-chart-bar"></i></div>
+            <div class="ms-icon"><i class="fa-solid fa-list-check"></i></div>
+            <div class="ms-icon"><i class="fa-solid fa-folder"></i></div>
+          </div>
+          <div class="mockup-main">
+            <div class="mockup-header">
+              <div>
+                <h3>Good morning, Alex</h3>
+                <span>Thursday, 21 May 2026</span>
+              </div>
+            </div>
+            <div class="mockup-task">
+              <div class="mockup-task-top">
+                <div class="mockup-check"></div>
+                <span class="mockup-task-title">Complete FYP documentation</span>
+              </div>
+              <div class="mockup-task-meta">
+                <span class="mockup-pill high">High</span>
+                <span class="mockup-pill cat">Work</span>
+              </div>
+            </div>
+            <div class="mockup-task">
+              <div class="mockup-task-top">
+                <div class="mockup-check"></div>
+                <span class="mockup-task-title">Prepare viva presentation</span>
+              </div>
+              <div class="mockup-task-meta">
+                <span class="mockup-pill medium">Medium</span>
+                <span class="mockup-pill cat">Personal</span>
+              </div>
+            </div>
+            <div class="mockup-task">
+              <div class="mockup-task-top">
+                <div class="mockup-check done"></div>
+                <span class="mockup-task-title" style="text-decoration:line-through;opacity:.6">Deploy on Railway</span>
+              </div>
+              <div class="mockup-task-meta">
+                <span class="mockup-pill low">Low</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="landing-features-wrap" id="features">
+  <div class="landing-container landing-features">
+    <div class="landing-section-header">
+      <span class="section-label">Features</span>
+      <h2>Everything you need to stay on track</h2>
+      <p>Task Flow combines task boards, smart filters, and analytics so you can focus on what matters.</p>
+    </div>
+    <div class="features-grid">
+      <article class="feature-card">
+        <div class="feature-icon blue"><i class="fa-solid fa-list-check"></i></div>
+        <h3>Task management</h3>
+        <p>Create, edit, and delete tasks with titles, descriptions, due dates, and priority levels.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon green"><i class="fa-solid fa-circle-check"></i></div>
+        <h3>Pending & completed</h3>
+        <p>Separate views for active and finished work—mark complete or restore tasks anytime.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon amber"><i class="fa-solid fa-folder-open"></i></div>
+        <h3>Custom categories</h3>
+        <p>Organize tasks with color-coded categories like Work, Personal, and Health.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon red"><i class="fa-solid fa-flag"></i></div>
+        <h3>Priority & overdue</h3>
+        <p>High, medium, and low priorities with visual overdue alerts on due dates.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon purple"><i class="fa-solid fa-chart-pie"></i></div>
+        <h3>Statistics dashboard</h3>
+        <p>Charts and breakdowns for completion rate, priorities, and productivity insights.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon teal"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3>Secure authentication</h3>
+        <p>Email signup with verification, Google sign-in, and password reset via OTP email.</p>
+      </article>
+    </div>
+  </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="landing-section-wrap" id="how-it-works">
+  <div class="landing-container landing-section">
+    <div class="landing-section-header">
+      <span class="section-label">How it works</span>
+      <h2>Up and running in three steps</h2>
+      <p>No complicated setup—sign up, add your tasks, and start tracking progress immediately.</p>
+    </div>
+    <div class="steps-row">
+      <article class="step-card">
+        <div class="step-num">1</div>
+        <h3>Create your account</h3>
+        <p>Sign up with email or continue with Google. Verify your email and log in securely.</p>
+      </article>
+      <article class="step-card">
+        <div class="step-num">2</div>
+        <h3>Add & organize tasks</h3>
+        <p>Set priorities, due dates, and categories. Filter pending work from your dashboard.</p>
+      </article>
+      <article class="step-card">
+        <div class="step-num">3</div>
+        <h3>Track your progress</h3>
+        <p>Complete tasks, review stats, and stay ahead of deadlines with overdue highlights.</p>
+      </article>
+    </div>
+  </div>
+  </section>
+
+  <!-- Call to action -->
+  <section class="landing-cta-wrap" id="cta">
+  <div class="landing-container">
+  <div class="landing-cta-band">
+    <h2>Ready to take control of your tasks?</h2>
+    <p>Join Task Flow today—built as a Final Year Project at Abdul Wali Khan University.</p>
+    <div class="landing-cta-buttons">
+      <a href="signup.html" class="landing-btn landing-btn-primary landing-btn-lg">
+        <i class="fa-solid fa-user-plus"></i> Get Started Free
+      </a>
+      <a href="index.html" class="landing-btn landing-btn-outline landing-btn-lg">
+        <i class="fa-solid fa-right-to-bracket"></i> Login
+      </a>
+    </div>
+  </div>
+  </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div class="landing-container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="/" class="landing-logo">
+          <div class="logo-icon"><i class="fa-solid fa-diagram-project"></i></div>
+          Task <span class="accent">Flow</span>
+        </a>
+        <p>Smart task management web application — Final Year Project, Department of Computer Science.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick links</h4>
+        <ul>
+          <li><a href="signup.html">Sign up</a></li>
+          <li><a href="index.html">Login</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How it works</a></li>
+        </ul>
+      </div>
+      <div class="footer-col footer-team">
+        <h4>Project team</h4>
+        <ul>
+          <li><i class="fa-solid fa-user"></i> Farhan Khan</li>
+          <li><i class="fa-solid fa-user"></i> Kamran Khan</li>
+          <li><i class="fa-solid fa-user"></i> Muneeb Diyan Khan</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span><strong>Abdul Wali Khan University</strong> · Mardan</span>
+      <span>© 2022 – 2026 · Task Flow FYP</span>
+    </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const nav = document.getElementById('landing-nav');
+      const menuToggle = document.getElementById('menu-toggle');
+      const navLinks = document.getElementById('nav-links');
+
+      window.addEventListener('scroll', function () {
+        nav.classList.toggle('scrolled', window.scrollY > 8);
+      });
+
+      menuToggle.addEventListener('click', function () {
+        const open = navLinks.classList.toggle('open');
+        menuToggle.setAttribute('aria-expanded', open);
+        menuToggle.innerHTML = open
+          ? '<i class="fa-solid fa-xmark"></i>'
+          : '<i class="fa-solid fa-bars"></i>';
+      });
+
+      function closeMobileMenu() {
+        navLinks.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        menuToggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
+      }
+
+      navLinks.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+          if (window.innerWidth <= 992) closeMobileMenu();
+        });
+      });
+
+      window.addEventListener('resize', function () {
+        if (window.innerWidth > 992) closeMobileMenu();
+      });
+
+      document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+        anchor.addEventListener('click', function (e) {
+          const id = this.getAttribute('href');
+          if (id.length < 2) return;
+          const el = document.querySelector(id);
+          if (el) {
+            e.preventDefault();
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

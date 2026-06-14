@@ -598,8 +598,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   );
 
   const page = window.location.pathname.split('/').pop();
-  const publicPages = ['index.html', 'signup.html', 'forgot-password.html', 'reset-password.html', ''];
-  const redirectToDashboardIfLoggedIn = ['index.html', 'signup.html', ''];
+  const publicPages = ['index.html', 'signup.html', 'forgot-password.html', 'reset-password.html', 'landing.html', ''];
+  const redirectToDashboardIfLoggedIn = ['index.html', 'signup.html', 'landing.html', ''];
   console.log(`📄 Current page: ${page || 'root'}`);
 
   if (!publicPages.includes(page)) {

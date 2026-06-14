@@ -85,6 +85,11 @@ app.use(session({
 
 app.use(passport.initialize());
 
+// ── Landing page at root (before static so index.html is not default)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'landing.html'));
+});
+
 // ── Serve static frontend files ───────────────────────────────────
 app.use(express.static(path.join(__dirname, '..')));
 
@@ -123,7 +128,7 @@ async function start() {
   app.listen(PORT, () => {
     console.log('');
     console.log('  ✅  Task Flow Server Running');
-    console.log(`  🌐  Open: http://localhost:${PORT}`);
+    console.log(`  🌐  Open: http://localhost:${PORT}  (landing page)`);
     console.log('  📡  API: http://localhost:' + PORT + '/api/ping');
     console.log('');
   });
