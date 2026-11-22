@@ -52,7 +52,7 @@ if (!googleClientId || !googleClientSecret) {
         const row = existingByEmail.rows[0];
         const userId = String(row.id);
         await query(
-          'UPDATE users SET google_id = $1, profile_picture = $2, name = $3, email_verified = TRUE WHERE id = $4',
+          'UPDATE users SET google_id = $1, profile_picture = $2, name = $3, password_hash = CASE WHEN email_verified THEN password_hash ELSE NULL END, email_verified = TRUE WHERE id = $4',
           [googleId, picture, name, userId]
         );
         return done(null, { id: userId, name, email, profile_picture: picture });
@@ -79,9 +79,6 @@ if (!googleClientId || !googleClientSecret) {
 ));
 }
 
-passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser((obj, done) => done(null, obj));
-
 const googleAuthEnabled = Boolean(googleClientId && googleClientSecret);
 
 router.get('/google', (req, res, next) => {
@@ -103,8 +100,14 @@ router.get('/google/callback', (req, res, next) => {
       console.error('[google-auth/callback] Authentication failed:', err);
       return res.redirect('/index.html?google_error=1');
     }
-    req.session.user = user;
-    res.redirect('/dashboard.html');
+    req.session.regenerate((sessionErr) => {
+      if (sessionErr) {
+        console.error('[google-auth/callback] Session error:', sessionErr);
+        return res.redirect('/index.html?google_error=1');
+      }
+      req.session.user = user;
+      res.redirect('/dashboard.html');
+    });
   })(req, res, next);
 });
 

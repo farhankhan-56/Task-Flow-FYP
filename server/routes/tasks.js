@@ -6,16 +6,33 @@ const express = require('express');
 const router = express.Router();
 const requireAuth = require('../middleware/auth');
 const { query } = require('../db');
+const { isUuid } = require('../utils/validators');
 
 const VALID_STATUSES = ['pending', 'complete'];
 const VALID_PRIORITIES = ['high', 'medium', 'low'];
+const MAX_TITLE_LENGTH = 200;
+const MAX_DESCRIPTION_LENGTH = 2000;
 
 const isValidStatus = (s) => VALID_STATUSES.includes(s);
 const isValidPriority = (p) => VALID_PRIORITIES.includes(p);
 
+async function isOwnCategory(categoryId, userId) {
+  if (!isUuid(categoryId)) return false;
+  const result = await query('SELECT 1 FROM categories WHERE id = $1 AND user_id = $2', [categoryId, userId]);
+  return result.rows.length > 0;
+}
+
+function taskTextError(title, description) {
+  if (typeof title !== 'string' || title.trim() === '') return 'Task title is required.';
+  if (title.trim().length > MAX_TITLE_LENGTH) return `Task title must be ${MAX_TITLE_LENGTH} characters or fewer.`;
+  if (description && typeof description !== 'string') return 'Description must be text.';
+  if (description && description.trim().length > MAX_DESCRIPTION_LENGTH) return `Description must be ${MAX_DESCRIPTION_LENGTH} characters or fewer.`;
+  return null;
+}
+
 function formatDateOnly(val) {
   if (!val) return null;
-  if (val instanceof Date) return val.toISOString().slice(0, 10);
+  if (val instanceof Date) return [val.getFullYear(), val.getMonth() + 1, val.getDate()].map((part) => String(part).padStart(2, '0')).join('-');
   if (typeof val === 'string') return val.slice(0, 10);
   return null;
 }
@@ -37,6 +54,11 @@ function rowToTask(row) {
 
 router.use(requireAuth);
 
+router.param('id', (req, res, next, id) => {
+  if (!isUuid(id)) return res.status(404).json({ error: 'Task not found.' });
+  next();
+});
+
 router.get('/', async (req, res) => {
   const userId = req.session.user.id;
   try {
@@ -56,8 +78,12 @@ router.post('/', async (req, res) => {
   const { title, description, dueDate, priority, category } = req.body;
   const userId = req.session.user.id;
 
-  if (!title || title.trim() === '') {
-    return res.status(400).json({ error: 'Task title is required.' });
+  const textError = taskTextError(title, description);
+  if (textError) {
+    return res.status(400).json({ error: textError });
+  }
+  if (priority && !isValidPriority(priority)) {
+    return res.status(400).json({ error: 'Invalid priority. Must be "high", "medium" or "low".' });
   }
 
   const pri = priority && isValidPriority(priority) ? priority : 'medium';
@@ -65,6 +91,9 @@ router.post('/', async (req, res) => {
   const catId = category && String(category).trim() !== '' ? category : null;
 
   try {
+    if (catId && !(await isOwnCategory(catId, userId))) {
+      return res.status(400).json({ error: 'Invalid category.' });
+    }
     const result = await query(
       `INSERT INTO tasks (user_id, category_id, title, description, due_date, priority, status)
        VALUES ($1, $2, $3, $4, $5, $6, 'pending')
@@ -75,6 +104,9 @@ router.post('/', async (req, res) => {
   } catch (err) {
     if (err.code === '23503') {
       return res.status(400).json({ error: 'Invalid category.' });
+    }
+    if (err.code === '22007' || err.code === '22008') {
+      return res.status(400).json({ error: 'Invalid due date.' });
     }
     console.error('[tasks POST]', err);
     res.status(500).json({ error: 'Server error.' });
@@ -96,14 +128,25 @@ router.put('/:id', async (req, res) => {
     const task = existing.rows[0];
     const { title, description, dueDate, priority, category } = req.body;
 
+    const textError = taskTextError(title === undefined ? task.title : title, description);
+    if (textError) {
+      return res.status(400).json({ error: textError });
+    }
+    if (priority !== undefined && !isValidPriority(priority)) {
+      return res.status(400).json({ error: 'Invalid priority. Must be "high", "medium" or "low".' });
+    }
+
     if (title !== undefined) task.title = title.trim();
-    if (description !== undefined) task.description = description.trim();
+    if (description !== undefined) task.description = (description || '').trim();
     if (dueDate !== undefined) {
       task.due_date = dueDate && String(dueDate).trim() !== '' ? String(dueDate).slice(0, 10) : null;
     }
     if (priority !== undefined && isValidPriority(priority)) task.priority = priority;
     if (category !== undefined) {
       task.category_id = category && String(category).trim() !== '' ? category : null;
+      if (task.category_id && !(await isOwnCategory(task.category_id, userId))) {
+        return res.status(400).json({ error: 'Invalid category.' });
+      }
     }
 
     const result = await query(
@@ -124,6 +167,9 @@ router.put('/:id', async (req, res) => {
   } catch (err) {
     if (err.code === '23503') {
       return res.status(400).json({ error: 'Invalid category.' });
+    }
+    if (err.code === '22007' || err.code === '22008') {
+      return res.status(400).json({ error: 'Invalid due date.' });
     }
     console.error('[tasks PUT]', err);
     res.status(500).json({ error: 'Server error.' });

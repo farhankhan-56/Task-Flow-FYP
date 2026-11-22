@@ -29,7 +29,12 @@ const pool = new Pool({
   connectionString,
   max: 20,
   idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
   ...(ssl !== false ? { ssl } : {})
+});
+
+pool.on('error', (err) => {
+  console.error('[db] Unexpected error on idle connection:', err.message);
 });
 
 function query(text, params) {

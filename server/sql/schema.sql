@@ -48,7 +48,7 @@ CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories (user_id);
 
 CREATE INDEX IF NOT EXISTS idx_otp_resets_user_id ON otp_resets (user_id);
 CREATE INDEX IF NOT EXISTS idx_users_google_id ON users (google_id);
-CREATE INDEX IF NOT EXISTS idx_email_verifications_user_id ON email_verifications (user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_email_verifications_user_id ON email_verifications (user_id);
 
 CREATE TABLE IF NOT EXISTS tasks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

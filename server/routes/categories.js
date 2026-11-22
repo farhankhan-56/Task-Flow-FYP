@@ -5,7 +5,8 @@
 const express = require('express');
 const router = express.Router();
 const requireAuth = require('../middleware/auth');
-const { query } = require('../db');
+const { pool, query } = require('../db');
+const { isUuid } = require('../utils/validators');
 
 const DEFAULT_CATEGORIES = [
   { name: 'Work', color: '#4A90E2' },
@@ -14,20 +15,37 @@ const DEFAULT_CATEGORIES = [
   { name: 'Health', color: '#F59E0B' }
 ];
 
+const COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
+
 function rowToCategory(row) {
   return { id: String(row.id), name: row.name, color: row.color };
 }
 
-router.use(requireAuth);
+router.param('id', (req, res, next, id) => {
+  if (!isUuid(id)) return res.status(404).json({ error: 'Category not found.' });
+  next();
+});
 
 async function seedDefaultsIfEmpty(userId) {
-  const count = await query('SELECT COUNT(*)::int AS n FROM categories WHERE user_id = $1', [userId]);
-  if (count.rows[0].n > 0) return;
-  for (const cat of DEFAULT_CATEGORIES) {
-    await query(
-      'INSERT INTO categories (user_id, name, color) VALUES ($1, $2, $3)',
-      [userId, cat.name, cat.color]
-    );
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [userId]);
+    const count = await client.query('SELECT COUNT(*)::int AS n FROM categories WHERE user_id = $1', [userId]);
+    if (count.rows[0].n === 0) {
+      for (const cat of DEFAULT_CATEGORIES) {
+        await client.query(
+          'INSERT INTO categories (user_id, name, color) VALUES ($1, $2, $3)',
+          [userId, cat.name, cat.color]
+        );
+      }
+    }
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
   }
 }
 
@@ -50,11 +68,14 @@ router.post('/', async (req, res) => {
   const { name, color } = req.body;
   const userId = req.session.user.id;
 
-  if (!name || name.trim() === '') {
+  if (typeof name !== 'string' || name.trim() === '') {
     return res.status(400).json({ error: 'Category name is required.' });
   }
   if (name.trim().length > 50) {
     return res.status(400).json({ error: 'Category name must be less than 50 characters.' });
+  }
+  if (color && !COLOR_PATTERN.test(color)) {
+    return res.status(400).json({ error: 'Invalid color.' });
   }
 
   try {
